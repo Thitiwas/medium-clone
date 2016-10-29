@@ -1,67 +1,91 @@
 <template>
   <div id="app">
-    <nav class="nav">
+    <nav class="nav headder">
       <div class="nav-left">
-        <a class="nav-item is-brand" href="#">
-          <h2 class="title is-2">Medium Clone</h2>
-        </a>
+        <div class="nav-item is-brand" >
+          <router-link class="nav-a" to="/home"><h2 class="title is-2">Medium Clone</h2></router-link>
+
+        </div>
       </div>
       <div class="nav-right nav-menu">
         <a class="nav-item">
-          <router-link to="/home">Home</router-link>
+          <router-link class="nav-a" to="/home">Home</router-link>
         </a>
         <a class="nav-item">
-          <router-link to="/write">Write</router-link>
+          <router-link class="nav-a" to="/write">Write</router-link>
         </a>
+        <a class="nav-item"></a>
       </div>
     </nav>
-        <router-view :state="state"></router-view>
+        <router-view :state="state" :add-new-story="addNewStory" :delete-story="deleteStory"></router-view>
     </div>
-
-    <!-- <p>
-      <router-link to="/home">Go to Home</router-link>
-      &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-      <router-link to="/write">Go to Write</router-link>
-      &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-      <router-link to="/story/1">Go to Story</router-link>
-    </p>
-    <hr> -->
-    <!-- route outlet -->
-    <!-- component matched by the route will render here -->
-    <!-- <router-view :state="state"></router-view> -->
   </div>
 </template>
 
 <script>
+import firebase from 'firebase'
+var config = {
+  apiKey: 'AIzaSyBerDiW4RJmvxjVGlpWq3y_GIpmE6IkMPw',
+  authDomain: 'medium-clone.firebaseapp.com',
+  databaseURL: 'https://medium-clone.firebaseio.com',
+  storageBucket: 'medium-clone.appspot.com',
+  messagingSenderId: '1066519793292'
+}
+firebase.initializeApp(config)
+var Storys = firebase.database().ref('storys')
+
 export default {
   name: 'app',
+  mounted () {
+    this.$router.push('/home')
+    var vm = this
+    Storys.on('child_added', function (data) {
+      var item = data.val()
+      item.id = data.key
+      vm.state.storys.push(item)
+    })
+    Storys.on('child_removed', function (data) {
+      var id = data.key
+      var index = vm.state.storys.findIndex(story => story.id === id)
+      vm.state.storys.splice(index, 1)
+    })
+  },
   data () {
     return {
       state: {
-        storys: [
-          {
-            id: 1,
-            title: 'Hello Vue Medium',
-            body: 'Quis consectetur for incidunt. Aliquam quia. Velitesse exercitationem so incididunt veniam ipsa but nihil lorem. Totam. Quae eaque omnis or consequuntur in yet fugit. Sunt beatae yet eu for quisquam velit natus for vel. Voluptatem aliquid ex. Modi vitae. Perspiciatis. Tempora exercitation for beatae but accusantium et. Ullamco consequuntur voluptate or aliquid but natus quia illum. Quaerat quo and sunt or adipisicing, for adipisci and et and reprehenderit. Tempora consequat laboris reprehenderit do.'
-          },
-          {
-            id: 2,
-            title: 'Quis consectetur',
-            body: 'Aliquid. Sint. Eaque unde ad odit so quia and perspiciatis and corporis. Dolor magni but modi for consectetur dolorem so consectetur. Architecto enim yet ullam magna for laboris aut and exercitationem. Eos exercitationem yet aliquam or reprehenderit. Quisquam dicta, yet magni totam so ipsam sequi. Corporis iure labore. Perspiciatis. Consequuntur error or tempora but aute aspernatur. Corporis occaecat magna proident, laboriosam. Nequeporro in and nulla but sed.'
-          }
-        ]
+        storys: []
       }
     }
   },
-  components: {
-    // Hello
+  methods: {
+    addNewStory (newStory) {
+      Storys.push(newStory)
+    },
+    deleteStory (id) {
+      firebase.database().ref('storys/' + id).remove()
+    }
   }
 }
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=Raleway');
 #app {
   background-color: #fafafa;
   height: 100vh;
+}
+.nav-menu {
+  margin-right: 50px;
+
+}
+.headder {
+  background-color: #2eb778;
+  margin-bottom: 50px;
+}
+.nav-a {
+  height: 50px;
+  padding-top: 10px;
+  font-size: 19px;
+  margin-right: 20px;
 }
 </style>

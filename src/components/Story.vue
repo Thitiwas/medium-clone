@@ -24,9 +24,9 @@ export default {
   margin-top: 20px;
   margin-bottom: 10px;
   background-color: #ffffff;
-  width: 80%;
-  margin-left: 10%;
-  margin-right: 10%;
+  width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
   border: 1px solid #d1d1d1;
   padding-left: 20px;
   padding-right: 20px;
